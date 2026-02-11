@@ -1,0 +1,7 @@
+# Ignore everything
+**
+# Allow only src/api_server the core API code to be created and dependencies requirements
+!src/api_server/**
+# Do not override the implementations
+src/api_server/impl
+src/api_server/main.py

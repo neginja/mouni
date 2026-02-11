@@ -1,0 +1,1098 @@
+openapi: 3.0.3
+info:
+  title: Mouni Expense Manager API
+  description: Simple API to manage group expenses and settle balances.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+tags:
+  - name: groups
+    description: Operations about groups and members
+  - name: members
+    description: Operations about members within groups
+  - name: activities
+    description: Operations about activities within groups
+  - name: expenses
+    description: Operations about expenses
+  - name: settlements
+    description: Calculate who owes who
+
+paths:
+  # Groups CRUD
+  /groups:
+    post:
+      tags:
+        - groups
+      summary: Create a new group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupCreate'
+      responses:
+        '201':
+          description: Created group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+    get:
+      tags:
+        - groups
+      summary: List all groups
+      responses:
+        '200':
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+
+  /groups/{groupId}:
+    get:
+      tags:
+        - groups
+      summary: Get group details
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: Group details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: Not found
+    put:
+      tags:
+        - groups
+      summary: Update a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupUpdate'
+      responses:
+        '200':
+          description: Updated group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: Not found
+    delete:
+      tags:
+        - groups
+      summary: Delete a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '204':
+          description: Group deleted
+        '404':
+          description: Not found
+
+  # Members CRUD
+  /groups/{groupId}/members:
+    post:
+      tags:
+        - members
+      summary: Add a member to group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberCreate'
+      responses:
+        '201':
+          description: Member added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '404':
+          description: Not found
+    get:
+      tags:
+        - members
+      summary: List members of a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+        '404':
+          description: Not found
+
+  /groups/{groupId}/members/{memberId}:
+    get:
+      tags:
+        - members
+      summary: Get a member's details in a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '200':
+          description: Member details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '404':
+          description: Group or member not found
+    put:
+      tags:
+        - members
+      summary: Update a member in a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/MemberId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberUpdate'
+      responses:
+        '200':
+          description: Updated member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '404':
+          description: Group or member not found
+    delete:
+      tags:
+        - members
+      summary: Remove a member from a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '204':
+          description: Member removed
+        '404':
+          description: Group or member not found
+
+  # Activities CRUD
+  /groups/{groupId}/activities:
+    post:
+      tags:
+        - activities
+      summary: Create a new activity in a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityCreate'
+      responses:
+        '201':
+          description: Created activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '404':
+          description: Not found
+    get:
+      tags:
+        - activities
+      summary: List all activities in a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+        '404':
+          description: Not found
+
+  /groups/{groupId}/activities/{activityId}:
+    get:
+      tags:
+        - activities
+      summary: Get activity details
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+      responses:
+        '200':
+          description: Activity details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '404':
+          description: Activity not found
+    put:
+      tags:
+        - activities
+      summary: Update an activity
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityUpdate'
+      responses:
+        '200':
+          description: Updated activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '404':
+          description: Activity not found
+    delete:
+      tags:
+        - activities
+      summary: Delete an activity
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+      responses:
+        '204':
+          description: Activity deleted
+        '404':
+          description: Activity not found
+
+  /groups/{groupId}/activities/{activityId}/status:
+    get:
+      tags:
+        - activities
+      summary: Get activity current settlement status
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+      responses:
+        '200':
+          description: Activity settlement status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - not_settled
+                      - partially_settled
+                      - settled
+                    description: Current settlement status of the activity
+                required:
+                  - status
+        '404':
+          description: Activity not found
+
+  # Expenses CRUD
+  /groups/{groupId}/activities/{activityId}/expenses:
+    post:
+      tags:
+        - expenses
+      summary: Add an expense to an activity
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseCreate'
+      responses:
+        '201':
+          description: Expense created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '404':
+          description: Activity or member not found
+    get:
+      tags:
+        - expenses
+      summary: List expenses in an activity
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the activity
+      responses:
+        '200':
+          description: List of expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Expense'
+        '404':
+          description: Activity not found
+
+  /groups/{groupId}/activities/{activityId}/expenses/{expenseId}:
+    get:
+      tags:
+        - expenses
+      summary: Get expense details
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the activity
+        - $ref: '#/components/parameters/ExpenseId'
+      responses:
+        '200':
+          description: Expense details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '404':
+          description: Activity or expense not found
+    put:
+      tags:
+        - expenses
+      summary: Update an expense in an activity
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the activity
+        - $ref: '#/components/parameters/ExpenseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseUpdate'
+      responses:
+        '200':
+          description: Updated expense
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '404':
+          description: Activity or expense not found
+    delete:
+      tags:
+        - expenses
+      summary: Delete an expense
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the activity
+        - $ref: '#/components/parameters/ExpenseId'
+      responses:
+        '204':
+          description: Expense deleted
+        '404':
+          description: Activity or expense not found
+
+  # Settlements CRUD
+  /groups/{groupId}/activities/{activityId}/settle:
+    post:
+        tags:
+          - settlements
+        summary: Settle an activity
+        parameters:
+          - $ref: '#/components/parameters/GroupId'
+          - $ref: '#/components/parameters/ActivityId'
+        responses:
+          '200':
+            description: List of settlements
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Settlement'
+          '404':
+            description: Not found
+  /groups/{groupId}/activities/{activityId}/settlements:
+    get:
+      tags:
+        - settlements
+      summary: Get settlements showing who owes whom in a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+        - $ref: '#/components/parameters/simulate'
+      responses:
+        '200':
+          description: List of settlements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Settlement'
+        '404':
+          description: Not found
+    post:
+      tags:
+        - settlements
+      summary: Create a settlement in a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementCreate'
+      responses:
+        '201':
+          description: Created settlement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        '404':
+          description: Not found
+    delete:
+      tags:
+        - settlements
+      summary: Delete all settlements for a specific activity in a group
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+      responses:
+        '204':
+          description: All settlements deleted successfully
+        '404':
+          description: Activity or group not found
+  /groups/{groupId}/activities/{activityId}/settlements/{settlementId}:
+    get:
+      tags:
+        - settlements
+      summary: Get a settlement detail
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+        - $ref: '#/components/parameters/SettlementId'
+      responses:
+        '200':
+          description: Settlement details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        '404':
+          description: Not found
+    patch:
+      tags:
+        - settlements
+      summary: Update settlement status
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+        - $ref: '#/components/parameters/SettlementId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paid:
+                  type: boolean
+              required:
+                - paid
+      responses:
+        '200':
+          description: Updated settlement with new paid (settled) status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        '404':
+          description: Not found
+    delete:
+      tags:
+        - settlements
+      summary: Delete a settlement
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/ActivityId'
+        - $ref: '#/components/parameters/SettlementId'
+      responses:
+        '204':
+          description: Settlement deleted
+        '404':
+          description: Not found
+
+components:
+  parameters:
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the group
+    MemberId:
+      name: memberId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the member
+    ExpenseId:
+      name: expenseId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the expense
+    SettlementId:
+      name: settlementId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the settlement
+    ActivityId:
+      name: activityId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the activity
+    simulate:
+      name: simulate
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: ["true", "false"]
+      description: if 'true' returns computed settlement but doesn't save and overwrite current
+
+  schemas:
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "group123"
+          readOnly: true
+        name:
+          type: string
+          example: "Trip to Japan"
+          minLength: 3
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the resource was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+      required:
+        - name
+
+    GroupCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Trip to Japan"
+          minLength: 3
+      required:
+        - name
+
+    GroupUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Trip to Japan"
+          minLength: 3
+      required:
+        - name
+
+    Member:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user1"
+          readOnly: true
+        name:
+          type: string
+          example: "Alice"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the resource was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+      required:
+        - name
+
+    MemberCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Alice"
+          minLength: 3
+      required:
+        - name
+
+    MemberUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Alice"
+          minLength: 3
+      required:
+        - name
+
+    Activity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "activity123"
+          readOnly: true
+        groupId:
+          type: string
+          example: "group123"
+          readOnly: true
+        name:
+          type: string
+          example: "Summer Trip 2025"
+          minLength: 3
+        startDate:
+          type: string
+          format: date
+          example: "2025-08-01"
+        endDate:
+          type: string
+          format: date
+          example: "2025-08-15"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the resource was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+      required:
+        - name
+        - startDate
+        - endDate
+
+    ActivityCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Summer Trip 2025"
+          minLength: 3
+        startDate:
+          type: string
+          format: date
+          example: "2025-08-01"
+        endDate:
+          type: string
+          format: date
+          example: "2025-08-15"
+      required:
+        - name
+        - startDate
+        - endDate
+
+    ActivityUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Summer Trip 2025"
+          minLength: 3
+        startDate:
+          type: string
+          format: date
+          example: "2025-08-01"
+        endDate:
+          type: string
+          format: date
+          example: "2025-08-15"
+      required:
+        - name
+        - startDate
+        - endDate
+
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "expense1"
+          readOnly: true
+        activityId:
+          type: string
+          example: "activity1"
+          readOnly: true
+        description:
+          type: string
+          example: "Dinner at sushi place"
+          minLength: 3
+        amount:
+          type: number
+          format: float
+          example: 120.50
+          minimum: 1
+        currency:
+          type: string
+          example: "JPY"
+          minLength: 3
+          default: "JPY"
+        paidBy:
+          type: string
+          description: Member ID who paid
+          example: "user1"
+        involved:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseInvolved'
+        date:
+          type: string
+          format: date-time
+          example: "2025-08-11T18:30:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the resource was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+      required:
+        - description
+        - amount
+        - currency
+        - paidBy
+        - involved
+        - date
+
+    ExpenseCreate:
+      type: object
+      properties:
+        description:
+          type: string
+          example: "Dinner at sushi place"
+          minLength: 3
+        amount:
+          type: number
+          format: float
+          example: 120.50
+          minimum: 1
+        currency:
+          type: string
+          example: "JPY"
+          minLength: 3
+          enum:
+          - JPY
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - CHF
+          - CNY
+          - HKD
+          - SGD
+          default: "JPY"
+        paidBy:
+          type: string
+          description: Member ID who paid
+          example: "user1"
+        involved:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseInvolved'
+        equalSplit:
+          type: boolean
+          default: true
+          description: >
+            If true, ignore any shares provided in `involved` and split equally.
+            If false, each involved entry must include a share.
+        date:
+          type: string
+          format: date-time
+          example: "2025-08-11T18:30:00Z"
+      required:
+        - description
+        - amount
+        - currency
+        - paidBy
+        - involved
+        - date
+
+    ExpenseInvolved:
+      type: object
+      required:
+        - memberId
+      properties:
+        memberId:
+          type: string
+        share:
+          type: number
+          minimum: 0
+          description: "How much this member owes. Required if equalSplit=false"
+
+    ExpenseUpdate:
+      type: object
+      properties:
+        description:
+          type: string
+          example: "Dinner at sushi place"
+          minLength: 3
+        amount:
+          type: number
+          format: float
+          example: 120.50
+          minimum: 1
+        currency:
+          type: string
+          example: "JPY"
+          minLength: 3
+          enum:
+          - JPY
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - CHF
+          - CNY
+          - HKD
+          - SGD
+          default: "JPY"
+        paidBy:
+          type: string
+          description: Member ID who paid
+          example: "user1"
+        involved:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseInvolved'
+        equalSplit:
+          type: boolean
+          default: true
+          description: >
+            If true, ignore any shares provided in `involved` and split equally.
+            If false, each involved entry must include a share.
+        date:
+          type: string
+          format: date-time
+          example: "2025-08-11T18:30:00Z"
+      required:
+        - description
+        - amount
+        - currency
+        - paidBy
+        - involved
+        - date
+
+    Settlement:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "settlement1"
+          readOnly: true
+        activityId:
+          type: string
+          example: "activity1"
+          readOnly: true
+        fromMember:
+          type: string
+          description: Member ID who owes money
+          example: "user2"
+        toMember:
+          type: string
+          description: Member ID who is owed money
+          example: "user1"
+        amount:
+          type: number
+          format: float
+          example: 40.17
+          minimum: 1
+        currency:
+          type: string
+          example: "JPY"
+          minLength: 3
+          enum:
+          - JPY
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - CHF
+          - CNY
+          - HKD
+          - SGD
+          default: "JPY"
+        paid:
+          type: boolean
+          description: Whether the settlement has been paid and is closed
+          example: false
+        paidOn:
+          type: string
+          format: date-time
+          description: Date and time when the settlement was marked as paid
+          example: "2025-08-19T15:30:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the resource was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+      required:
+        - fromMember
+        - toMember
+        - amount
+        - currency
+
+    SettlementCreate:
+      type: object
+      properties:
+        fromMember:
+          type: string
+          description: Member ID who owes money
+          example: "user2"
+        toMember:
+          type: string
+          description: Member ID who is owed money
+          example: "user1"
+        amount:
+          type: number
+          format: float
+          example: 40.17
+          minimum: 1
+        currency:
+          type: string
+          example: "JPY"
+          minLength: 3
+          enum:
+          - JPY
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - CHF
+          - CNY
+          - HKD
+          - SGD
+          default: "JPY"
+      required:
+        - fromMember
+        - toMember
+        - amount
+        - currency
+
+    SettlementUpdate:
+      type: object
+      properties:
+        fromMember:
+          type: string
+          description: Member ID who owes money
+          example: "user2"
+        toMember:
+          type: string
+          description: Member ID who is owed money
+          example: "user1"
+        amount:
+          type: number
+          format: float
+          example: 40.17
+          minimum: 1
+        currency:
+          type: string
+          example: "JPY"
+          minLength: 3
+          enum:
+          - JPY
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - CHF
+          - CNY
+          - HKD
+          - SGD
+          default: "JPY"
+      required:
+        - fromMember
+        - toMember
+        - amount
+        - currency
+
