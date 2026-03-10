@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MOUNI_HOST=${MOUNI_HOST:-localhost}
+MOUNI_HOST=${MOUNI_HOST:-"127.0.0.1"}
 MOUNI_PASSWORD=${MOUNI_PASSWORD:-NO_AUTH}
 
 docker run -it --rm \

@@ -2,7 +2,7 @@
 set -e
 
 SCHEME=${SCHEME:-http}
-HOST=${HOST:-localhost}
+HOST=${HOST:-"127.0.0.1"}
 API_PORT=${API_PORT:-8080}
 FRONTEND_PORT=${FRONTEND_PORT:-5000}
 
