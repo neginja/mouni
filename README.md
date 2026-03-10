@@ -3,7 +3,7 @@
 A lightweight app for group expense management meant to be self-hosted.
 
 - [Backend](./backend/README.md) built with `Python` and `FastApi` spec first.
-- [Frontend](./frontend/README.md) with `Flutter` (web)
+- [Frontend](./frontend/README.md) with `dart` (Flutter, web)
 
 ## Build and run locally
 

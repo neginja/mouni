@@ -1,9 +1,9 @@
 import traceback
-
 from sqlite3 import DatabaseError, IntegrityError, OperationalError, ProgrammingError
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+
 from api_server.impl.utils import logger_from_env
 
 logger = logger_from_env("ErrorHandler")

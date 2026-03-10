@@ -1,6 +1,6 @@
 # Mouni - Frontend
 
-Mouni is a lightweight group expenses manager. This is the frontend package written with Flutter.
+Mouni is a lightweight group expenses manager. This is the frontend package written in `dart` with Flutter.
 
 ## Install dependencies
 
