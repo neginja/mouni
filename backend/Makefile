@@ -4,6 +4,8 @@
 
 # Path to the OpenAPI CLI (adjust if you use a Docker wrapper)
 OPENAPI_GEN   := uv run openapi-generator-cli
+# Path to the ruff CLI
+RUFF					:= uv run ruff
 
 # Input spec & output folder
 SPEC          := swagger.yaml
@@ -24,7 +26,7 @@ generate:
 		--additional-properties=packageName=api_server \
 		--global-property apis,models,apiTests=false,modelTests=false,supportingFiles= \
 		--ignore-file-override .openapi-generator-ignore
-	ruff check $(OUT_DIR)/src --fix --select I
+	$(RUFF) check $(OUT_DIR)/src --fix --select I
 
 install:
 	@uv sync --group dev

@@ -6,49 +6,25 @@ readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "neginja", email = "neginja@healthy.soup" }]
 dependencies = [
-    "aiofiles==24.1.0",
-    "aniso8601==10.0.1",
-    "async-exit-stack==1.0.1",
-    "async-generator==1.10",
-    "certifi==2025.8.3",
-    "chardet==5.2.0",
-    "click==8.2.1",
-    "dnspython==2.7.0",
-    "email-validator==2.3.0",
-    "fastapi==0.116.1",
-    "graphene==3.4.3",
-    "graphql-core==3.2.6",
-    "graphql-relay==3.2.0",
-    "h11==0.16.0",
-    "httptools<0.7.0,>=0.6.4",
-    "httpx==0.28.1",
-    "idna==3.10",
-    "itsdangerous==2.2.0",
-    "Jinja2==3.1.6",
-    "MarkupSafe==3.0.2",
-    "orjson==3.11.3",
-    "promise==2.3",
-    "pydantic>=2.11.7",
-    "python-dotenv==1.1.1",
-    "python-multipart==0.0.20",
-    "PyYAML<6.1.0,>=6.0.2",
-    "requests==2.32.5",
-    "Rx==3.2.0",
-    "starlette==0.47.3",
-    "typing-extensions==4.15.0",
-    "ujson==5.11.0",
-    "urllib3==2.5.0",
-    "uvicorn==0.35.0",
-    "uvloop==0.21.0",
-    "watchgod==0.8.2",
-    "websockets==15.0.1",
+    "fastapi>=0.135.1",
+    "itsdangerous>=2.2.0",
+    "python-multipart>=0.0.22",
 ]
 
 [project.license]
 text = "Apache-2.0"
 
 [dependency-groups]
-dev = ["openapi-generator-cli==7.14.0", "httpx", "ruff"]
+dev = [
+    "openapi-generator-cli==7.14.0",
+    "httpx",
+    "ruff",
+    "uvicorn>=0.41.0",
+]
+deploy = [
+    "gunicorn==25.1.0",
+    "uvicorn>=0.41.0",
+]
 
 [tool.basedpyright]
 venvPath = "."
