@@ -4,26 +4,31 @@
 
 ### Tools installation
 
-1. to re-generate API code you'll need to install Java and the openapi generator
+to run this project you'll need `uv` and `make` (optional but referenced in this README)
 
-    ```console
-    pip install openapi-generator-cli==7.14.0
-    ```
+- [uv](https://docs.astral.sh/uv/)
+- [make](https://www.gnu.org/software/make/)
 
-2. to serve the API locally, you'll need to first install a web-server utility `uvicorn`
+### Dependencies installation
 
-    ```console
-    pip install uvicorn==0.35.0
-    ```
+```shell
+make install
+```
+
+OR
+
+```shell
+uv sync --group dev
+```
 
 ### Generation
 
 Although generated code is versioned, if you make updates to the `swagger.yaml` spec you might want to regenerate the api server code.
 
-I decided top use a spec first approach however when generating a server with `FastApi` backend FastApi generates again the `OpenApi` spec to serve as a doc. It's a bit of weird flex but ok.
+I decided to use a spec first approach however when generating a server with `FastApi` backend FastApi generates again the `OpenApi` spec to serve as a doc. It's a bit of  chicken and egg problem but ok.
 
 > [!NOTE]
-> Make sure to have installed the tools as instructed above
+> Make sure to run `make install` first
 
 ```shell
 make generate
@@ -35,18 +40,6 @@ if you removed models and added new ones, you might need to clean generated code
 make clean && make generate
 ```
 
-### Dependencies installation
-
-```shell
-make install
-```
-
-OR
-
-```shell
-pip install -r requirements.txt
-```
-
 ### Serve API
 
 ```shell
@@ -55,7 +48,7 @@ make serve
 
 API doc should be accessible from `localhost:8080/docs`
 
-### VS code launch with debugger
+### VS codium launch with debugger
 
 Launch file entry
 
@@ -87,11 +80,7 @@ Launch file entry
 
 ### Debug CLI
 
-You can use a tiny debug CLI to quickly test endpoints (we don't write tests because lol)
-
-```shell
-pip install -r requirements_dev.txt
-```
+You can use a tiny debug CLI to quickly test endpoints (we don't write tests because ain't no body got time for that)
 
 Seed
 
